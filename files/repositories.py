@@ -166,7 +166,7 @@ class ProductRepository(Repository):
             VALUES (:product_id, :store_id)
         """, product_id=product.id, store_id=store.id)
 
-    # def get_all_by_product(self, product):
+    # def get_favorite_by_product(self, product):
     #     products = self.db.query(f"""
     #         SELECT product.id, product.name from store
     #         JOIN product_store ON product_store.store_id = store.id
@@ -244,8 +244,7 @@ class FavoriteRepository(Repository):
     def save(self, favorite):
         self.db.query(f"""
             INSERT INTO {self.table} (substitut_id, original_id)
-            VALUES (:id, :name)
-            ON DUPLICATE KEY UPDATE  name = :name
+            VALUES (:substitut_id, :original_id)
         """, **vars(favorite))
 
         return favorite

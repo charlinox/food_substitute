@@ -1,5 +1,5 @@
-from Off_files.models import Product, Store
-from Off_files.openfoodfacts import ProductDownloader
+from files.models import Product, Store
+from files.openfoodfacts import ProductDownloader
 
 
 def main():
