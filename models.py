@@ -1,6 +1,6 @@
 @dataclass
-class Aliment:
-    '''Class of aliment.'''
+class Product:
+    '''Class of Products.'''
     name: None
     nutriscore: str
     brand: str
@@ -15,19 +15,19 @@ class Aliment:
 class Store:
     '''Class for stores.'''
     name: str
-    aliments: str
+    Product: str
 
 
 @dataclass
 class Favorite:
     '''Class for favorites.'''
     name: str
-    aliment_as_original: str
-    aliment_as_substitut: str
+    Product_as_original: str
+    Product_as_substitut: str
 
 
 @dataclass
-class Categorie:
+class Category:
     '''Class for categorie.'''
     name: str
-    aliments: str
+    product: str
