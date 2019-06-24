@@ -4,16 +4,16 @@ from files.constants import *
 
 def main():
     downloader = ProductDownloader()
-    for each_product in CATEGORY_LIST:
-        products = downloader.fetch(each_product, 1000)
+    for each_category in CATEGORY_LIST:
+        products = downloader.fetch(each_category, 1000)
         for product in products:
             try:
                 product = Product.create_from_openfoodfacts(**product)
             except TypeError:
                 continue
 
-    for i,choices in CATEGORY_LIST:
-        print((i+1) + " : " + choices)
+    for i,choice in CATEGORY_LIST:
+        print((i+1) + " : " + choice)
     choice = input("Choisissez le numéro d'un produit à substituer ?")
 
 

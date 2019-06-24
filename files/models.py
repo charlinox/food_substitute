@@ -1,7 +1,7 @@
 from . import repositories, constants
 
 
-pipclass Model:
+class Model:
 
     def save(self):
         """Saves the model in the database."""
@@ -52,10 +52,10 @@ class Product(Model):
         return Category.objects.get_all_by_product(self)
 
     @classmethod
-    def create_from_openfoodfacts(cls, product_name, nutrition_grades, url, brands, stores, **kwargs):
+    def create_from_openfoodfacts(cls, product_name, nutrition_grades, url, brands, stores, categories, **kwargs):
         """Creates products from openfoodfacts data."""
         if not (product_name.strip() or nutrition_grades.strip() or stores.strip()):
-            raise TypeError """("product_name, nutrition_grades and stores must be non-blank fields")"""
+            raise TypeError("product_name, nutrition_grades and stores must be non-blank fields")
 
         product = cls.objects.get_or_create(
             name=product_name.lower().strip(),
@@ -68,9 +68,8 @@ class Product(Model):
                 name=store.lower().strip()
             )
             cls.objects.add_store(product, store)
-        return product
 
-        for category in CATEGORY_LIST:
+        for category in categories.split(','):
             category = Category.objects.get_or_create(
                 name=category.lower().strip()
             )

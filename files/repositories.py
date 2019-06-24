@@ -130,7 +130,7 @@ class ProductRepository(Repository):
                 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
                 name VARCHAR(140) NOT NULL,
                 nutrition_grade char NOT NULL,
-                url varchar(255)
+                url varchar(255),
                 brand VARCHAR(100),
                 PRIMARY KEY (id)
             )
@@ -141,12 +141,12 @@ class ProductRepository(Repository):
                 product_id int unsigned,
                 store_id int unsigned,
                 CONSTRAINT pfk_product
-                    FOREIGN KEY (product)
+                    FOREIGN KEY  (product_id)
                     REFERENCES Product(id),
                 CONSTRAINT pfk_store
-                    FOREIGN KEY (store)
+                    FOREIGN KEY (store_id)
                     REFERENCES Store(id),
-                PRIMARY KEY (product, store)
+                PRIMARY KEY (product_id, store_id)
             )
         """)
 
@@ -199,13 +199,13 @@ class CategoryRepository(Repository):
             CREATE TABLE IF NOT EXISTS Asso_product_category (
                 product_id int unsigned,
                 category_id int unsigned,
-                CONSTRAINT pfk_product
-                    FOREIGN KEY (product)
+                CONSTRAINT pfk_product2
+                    FOREIGN KEY (product_id)
                     REFERENCES Product(id),
                 CONSTRAINT pfk_category
-                    FOREIGN KEY (category)
+                    FOREIGN KEY (category_id)
                     REFERENCES Category(id),
-                PRIMARY KEY (product, category)
+                PRIMARY KEY (product_id, category_id)
             )
         """)
 

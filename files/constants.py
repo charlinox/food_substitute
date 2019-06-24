@@ -1,1 +1,1 @@
-    CATEGORY_LIST=[pizza, choucroute, cassoulet]
+CATEGORY_LIST=["pizza", "choucroute", "cassoulet"]
