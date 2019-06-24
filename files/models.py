@@ -51,22 +51,32 @@ class Product(Model):
         """Loads related stores."""
         return Category.objects.get_all_by_product(self)
 
-    # @classmethod
-    # def create_from_openfoodfacts(cls, code, product_name, stores, **kwargs):
-    #     """Creates store from openfoodfacts data."""
-    #     if not stores.strip():
-    #         raise TypeError("stores must be a non-blank field")
+    @classmethod
+    def create_from_openfoodfacts(cls, product_name, nutrition_grades, url, brands, stores, **kwargs):
+        """Creates products from openfoodfacts data."""
+        if not (product_name.strip() or nutrition_grades.strip() or stores.strip()):
+            raise TypeError """("product_name, nutrition_grades and stores must be non-blank fields")"""
 
-    #     product = cls.objects.get_or_create(
-    #         id=code,
-    #         name=product_name.lower().strip()
-    #     )
-    #     for store in stores.split(','):
-    #         store = Store.objects.get_or_create(
-    #             name=store.lower().strip()
-    #         )
-    #         cls.objects.add_store(product, store)
-    #     return product
+        product = cls.objects.get_or_create(
+            name=product_name.lower().strip(),
+            nutrition_grade=nutrition_grades.lower().strip(),
+            url=url.lower().strip(),
+            brand=brands.lower().strip()
+        )
+        for store in stores.split(','):
+            store = Store.objects.get_or_create(
+                name=store.lower().strip()
+            )
+            cls.objects.add_store(product, store)
+        return product
+
+        for category in CATEGORY_LIST:
+            category = Category.objects.get_or_create(
+                name=category.lower().strip()
+            )
+            cls.objects.add_category(product, category)
+        return product
+
 
 
 Product.objects = repositories.ProductRepository(Product)

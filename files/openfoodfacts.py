@@ -3,12 +3,12 @@ import requests
 
 class ProductDownloader:
 
-    def fetch(self, category, number=20):
+    def fetch(self, categories, number=20):
         payload = {
             "action": "process",
             "tagtype_0": "categories",
             "tag_contains_0": "contains",
-            "tag_0": category,
+            "tag_0": categories,
             "page_size": number,
             "json": 1,
         }
