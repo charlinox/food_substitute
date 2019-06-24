@@ -218,12 +218,6 @@ class CategoryRepository(Repository):
 
         return category
 
-    def add_category(self, product, category):
-        self.db.query("""
-            INSERT IGNORE INTO product_category(product_id, category_id)
-            VALUES (:product_id, :category_id)
-        """, product_id=product.id, category_id=category.id)
-
     def get_all_by_category(self, product):
         products = self.db.query(f"""
             SELECT product.id, product.name from store

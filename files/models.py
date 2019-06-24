@@ -1,7 +1,7 @@
-from . import repositories
+from . import repositories, constants
 
 
-class Model:
+pipclass Model:
 
     def save(self):
         """Saves the model in the database."""

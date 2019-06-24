@@ -14,7 +14,7 @@ def main():
 
     for i,choices in CATEGORY_LIST:
         print((i+1) + " : " + choices)
-    choice = input ("Choisissez le numéro d'un produit à substituer ?")
+    choice = input("Choisissez le numéro d'un produit à substituer ?")
 
 
 if __name__ == "__main__":
