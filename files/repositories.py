@@ -88,7 +88,7 @@ class StoreRepository(Repository):
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                store VARCHAR(140) NOT NULL,
+                name VARCHAR(140) NOT NULL,
                 PRIMARY KEY (id)
             )
         """)
@@ -137,15 +137,15 @@ class ProductRepository(Repository):
         """)
 
         self.db.query("""
-            CREATE TABLE IF NOT EXISTS Product_store (
+            CREATE TABLE IF NOT EXISTS product_store (
                 product_id int unsigned,
                 store_id int unsigned,
                 CONSTRAINT pfk_product
                     FOREIGN KEY  (product_id)
-                    REFERENCES Product(id),
+                    REFERENCES product(id),
                 CONSTRAINT pfk_store
                     FOREIGN KEY (store_id)
-                    REFERENCES Store(id),
+                    REFERENCES store(id),
                 PRIMARY KEY (product_id, store_id)
             )
         """)
@@ -161,22 +161,22 @@ class ProductRepository(Repository):
 
     def add_product(self, product, store):
         self.db.query("""
-            INSERT IGNORE INTO Product_store(product_id, store_id)
+            INSERT IGNORE INTO product_store(product_id, store_id)
             VALUES (:product_id, :store_id)
         """, product_id=product.id, store_id=store.id)
 
     def get_favorite_by_product(self, product):
         products = self.db.query(f"""
             SELECT product.id, product.name from store
-            JOIN product_store ON Product_store.store_id = store.id
-            JOIN product ON Product_store.product_id = product.id
+            JOIN product_store ON product_store.store_id = store.id
+            JOIN product ON product_store.product_id = product.id
             WHERE store.id = :id
         """, id=store.id).all(as_dict=True)
         return [self.model(**product) for product in products]
 
     def add_category(self, product, category):
         self.db.query("""
-            INSERT IGNORE INTO Product_category(product_id, category_id)
+            INSERT IGNORE INTO product_category(product_id, category_id)
             VALUES (:product_id, :category_id)
         """, product_id=product.id, category_id=category.id)
 
@@ -196,15 +196,15 @@ class CategoryRepository(Repository):
         """)
 
         self.db.query("""
-            CREATE TABLE IF NOT EXISTS Asso_product_category (
+            CREATE TABLE IF NOT EXISTS product_category (
                 product_id int unsigned,
                 category_id int unsigned,
-                CONSTRAINT pfk_product2
+                CONSTRAINT pfk_product_2
                     FOREIGN KEY (product_id)
-                    REFERENCES Product(id),
-                CONSTRAINT pfk_category
+                    REFERENCES product(id),
+                CONSTRAINT pfk_category_2
                     FOREIGN KEY (category_id)
-                    REFERENCES Category(id),
+                    REFERENCES category(id),
                 PRIMARY KEY (product_id, category_id)
             )
         """)
@@ -221,8 +221,8 @@ class CategoryRepository(Repository):
     def get_all_by_category(self, product):
         products = self.db.query(f"""
             SELECT product.id, product.name from store
-            JOIN product_category ON Asso_product_category.product_id = product.id
-            JOIN product ON Product_category.category_id = category.id
+            JOIN product_category ON product_category.product_id = product.id
+            JOIN product ON product_category.category_id = category.id
             WHERE product.id = :id
         """, id=product.id).all(as_dict=True)
         return [self.model(**product) for product in products]
@@ -252,8 +252,8 @@ class FavoriteRepository(Repository):
     def get_all_by_favorite(self, store):
         products = self.db.query(f"""
             SELECT product.id, product.name from store
-            JOIN product_store ON Product_store.store_id = store.id
-            JOIN product ON Product_store.product_id = product.id
+            JOIN product_store ON product_store.store_id = store.id
+            JOIN product ON product_store.product_id = product.id
             WHERE store.id = :id
         """, id=store.id).all(as_dict=True)
         return [self.model(**product) for product in products]

@@ -12,9 +12,9 @@ def main():
             except TypeError:
                 continue
 
-    for i,choice in CATEGORY_LIST:
-        print((i+1) + " : " + choice)
-    choice = input("Choisissez le numéro d'un produit à substituer ?")
+    # for i,choice in :
+    #     print((i+1) + " : " + choice)
+    # choice = input("Choisissez le numéro d'un produit à substituer ?")
 
 
 if __name__ == "__main__":
