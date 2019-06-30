@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# coding: utf-8
+
 from . import repositories, constants
 
 
@@ -7,13 +10,13 @@ class Model:
         """Saves the model in the database."""
         self.objects.save(self)
 
-    def __repr__(self):
-        """Formats a string representing the model."""
-        attributes = ", ".join(
-            f"{key}={value}"
-            for key, value in vars(self).items()
-        )
-        return f"{type(self).__name__}({attributes})"
+    # def __repr__(self):
+    #     """Formats a string representing the model."""
+    #     attributes = ", ".join(
+    #         f"{key}={value}"
+    #         for key, value in vars(self).items()
+    #     )
+    #     return f"{type(self).__name__}({attributes})"
 
 
 class Store(Model):
@@ -48,7 +51,7 @@ class Product(Model):
 
     @property
     def categories(self):
-        """Loads related stores."""
+        """Loads related category."""
         return Category.objects.get_all_by_product(self)
 
     @classmethod
@@ -96,5 +99,10 @@ class Category(Model):
     def __init__(self, name, **kwargs):
         """Initializes the model."""
         self.name = name
+
+    @property
+    def products(self):
+        """Loads related products."""
+        return category.objects.get_all_by_category(self)
 
 Category.objects = repositories.CategoryRepository(Category)

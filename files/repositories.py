@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# coding: utf-8
+
 from .database import db
 from .exceptions import NotFoundError, NotUniqueError
 
@@ -218,13 +221,13 @@ class CategoryRepository(Repository):
 
         return category
 
-    def get_all_by_category(self, product):
+    def get_all_by_category(self, category):
         products = self.db.query(f"""
             SELECT product.id, product.name from store
             JOIN product_category ON product_category.product_id = product.id
             JOIN product ON product_category.category_id = category.id
             WHERE product.id = :id
-        """, id=product.id).all(as_dict=True)
+        """, id=category.id).all(as_dict=True)
         return [self.model(**product) for product in products]
 
 
