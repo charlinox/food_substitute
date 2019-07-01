@@ -21,9 +21,10 @@ class Model:
 
 class Store(Model):
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, id=None, **kwargs):
         """Initializes the model."""
         self.name = name
+        self.id = id
 
     @property
     def products(self):
@@ -36,11 +37,11 @@ Store.objects = repositories.StoreRepository(Store)
 
 class Product(Model):
 
-    def __init__(self, name, nutriscore, url, brand=None,  **kwargs):
+    def __init__(self, id, name, nutrition_grade, url, **kwargs):
         """Initializes the model."""
+        self.id = id
         self.name = name
-        self.nutriscore = nutriscore
-        self.brand = brand
+        self.nutrition_grade = nutrition_grade
         self.url = url
 
 
@@ -55,7 +56,7 @@ class Product(Model):
         return Category.objects.get_all_by_product(self)
 
     @classmethod
-    def create_from_openfoodfacts(cls, product_name, nutrition_grades, url, brands, stores, categories, **kwargs):
+    def create_from_openfoodfacts(cls, code, product_name, nutrition_grades, url, stores, categories, **kwargs):
         """Creates products from openfoodfacts data."""
         if not (product_name.strip() or nutrition_grades.strip() or stores.strip()):
             raise TypeError("product_name, nutrition_grades and stores must be non-blank fields")
@@ -64,7 +65,7 @@ class Product(Model):
             name=product_name.lower().strip(),
             nutrition_grade=nutrition_grades.lower().strip(),
             url=url.lower().strip(),
-            brand=brands.lower().strip()
+            id=code
         )
         for store in stores.split(','):
             store = Store.objects.get_or_create(
@@ -96,9 +97,10 @@ Favorite.objects = repositories.FavoriteRepository(Favorite)
 
 class Category(Model):
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, id=None, **kwargs):
         """Initializes the model."""
         self.name = name
+        self.id=id
 
     @property
     def products(self):
