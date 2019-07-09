@@ -183,6 +183,30 @@ class ProductRepository(Repository):
             VALUES (:product_id, :category_id)
         """, product_id=product.id, category_id=category.id)
 
+    def fine_substituts(self, product_choice):
+        products = self.db.query("""
+        SELECT product.id, count(*) FROM product 
+        JOIN product_category ON product.id = product_category.product_id
+        WHERE 
+            product.id != :product_choice_id
+
+            AND product_category.category_id IN (
+                SELECT category_id FROM product_category
+                WHERE product_id = :product_choice_id
+            )
+
+            AND product.nutrition_grade < (
+                SELECT nutrition_grade FROM product
+                WHERE product.id = :product_choice_id
+            )
+
+        -- On groupe par nom de produit pour l'aggrégation
+        GROUP BY product.id
+
+        -- On ordonne par nombre décroissant de tags communs
+        ORDER BY count(*) DESC, MAX(:product_choice_nutrition_grade) ASC
+        """, product_choice_id=product_choice.id, product_choice_nutrition_grade=product_choice.nutrition_grade)
+        return [self.model(**product) for product in products]
 
 
 class CategoryRepository(Repository):
@@ -218,16 +242,15 @@ class CategoryRepository(Repository):
             VALUES (:id, :name)
             ON DUPLICATE KEY UPDATE  name = :name
         """, **vars(category))
-
         return category
 
     def get_all_by_category(self, category):
         products = self.db.query(f"""
-            SELECT product.id, product.name from store
+            SELECT product.id, product.name from category
             JOIN product_category ON product_category.product_id = product.id
             JOIN product ON product_category.category_id = category.id
             WHERE product.id = :id
-        """, id=category.id).all(as_dict=True)
+        """, id=product.id).all(as_dict=True)
         return [self.model(**product) for product in products]
 
 

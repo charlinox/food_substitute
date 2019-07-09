@@ -7,62 +7,92 @@ from files.constants import *
 
 
 class Client:
-    """ class integrating the initialization and the main frames of the app """
-
-    def __init__(self):
+    """ Main frame """
 
     def main_loop(self):
-        """ Main screen  """
-        stay = True
-        start_menu = 1
+        """ Main menu """
+
+        start_menu = 0
+        while True:
+            print(
+                "1 - Quel aliment souhaitez-vous remplacer ?\n"
+                "2 - Retrouver mes aliments substitués.\n"
+                "3 - Sortir du programme.\n"
+            )
+            main_choice = inputs()
+            if main_choice in ("1", "2", "3"):
+                return main_choice
+        
+
+    def category_loop(self):
+        """ Category menu """
+        while True:
+            print("Sélectionnez la catégorie en entrant son numéro parmis les choix suivants :")
+            for i, category in enumerate(CATEGORY_LIST)
+                print(f"{i+1} - {category}"
+            category_choice = input()
+            if category_choice.isdigit():
+                category_choice = int(category_choice)
+                if 0 < category_choice <= len(CATEGORY_LIST):
+                    return CATEGORY_LIST[category_choice-1]
+
+        return category_choice
+
+    def product_loop(self, category_choice):
+        """ Product menu """
+        while True:
+            print("Sélectionnez l'aliment en entrant son numéro parmis les choix suivants :")
+            category = Category.objects.get(name=category_choice)
+            list_product = []
+            for i, product in enumerate(category.products)
+                list_product[i] = append(product)
+                if i < 10:
+                    print(f"{i+1} - {product}"
+                else:
+                    break
+            product_choice= = input()
+            if product_choice.isdigit():
+                product_choice = int(product_choice)
+                if 0 < product_choice <= 10:
+                    return list_product[i-1]
+
+    def substituts_loop(self, product_choice):
+        """ Menu displaying the three best substituts """
+            print("Sélectionnez un substitut en entrant son numéro parmis les choix suivants :")
+        best_substituts = Product.objects.fine_substituts(name=product_choice)
+        list_substituts = []
+        for i, substitut in enumerate(best_substituts.products)
+            list_substituts[i] = append(substitut)
+                print(f"{i+1} - {substitut}"
+        print(
+                f"Voici les trois meilleurs substituts à ce produit : {}\n"
+                "Les magasins ou l'acheter :\n"
+                for store in Stores.objects.get
+                "3 - Sortir du programme.\n"
+            )
+
+        #   name
+        #   stores
+        #   url
+
+        print("Souhaitez vous enregistrer le résultat dans la base de données (O/N) ?")
+        save_choice = inputs().upper()
         while stay:
-            print("""
-                1 - Quel aliment souhaitez-vous remplacer ?"/n
-                2 - Retrouver mes aliments substitués./n
-                3 - Sortir du programme.
-                """)
-            main_choice = int(inputs())
-            while stay:
-                if main_choice == 1:
-                    print("Sélectionnez la catégorie en entrant son numéro parmis les choix suivants :")
-                    print(f"{((category).index)+1)} :{category}" for category in CATEGORY_LIST)) # start_menu possible
-                    category_choice = CATEGORY_LIST[inputs()-1]
-                    while stay:
-                        print("Sélectionnez l'aliment en entrant son numéro parmis les choix suivants :")
-                        category = Category.products(category_choice)
-                        print(f"{(lambda start_menu: start_menu += 1)} :{product}" for product in category.products))
-                        
-                        # Possibilité de faire comme ca aussi :
-                        # category = Category.products(category_choice)
-                        # for product in category.products:
-                        #     print(f"{(lambda start_menu: start_menu += 1)} :{product}")
+            if save_choice == "O":
+                # Enregistrer en bdd le produit original et son substitut
+                stay = False
+            elif save_choice == "N":
+                stay = False
 
-                        product_choice = int(inputs())
-                        while stay:                   
-                            # Rechercher dans la bdd le premier produit appartenant à la même
-                            # catégorie et ayant le nutriscore le plus faible
-                            # puis l'afficher ainsi :
-                            #   name
-                            #   brand
-                            #   stores
-                            #   url  
-
-                            print("Souhaitez vous enregistrer le résultat dans la base de données (O/N) ?")
-                            save_choice = inputs().upper()
-                            while stay:
-                                if save_choice == "O":
-                                    # Enregistrer en bdd le produit original et son substitut
-                                elif save_choice == "N":
-                                    # Revenir au menu principal
-
-                if main_choice == 2:
-                    
-
-                if main_choice == 3:
-                    stay = False
         
 
     def start():
         """  Main frame  """
-        bdd_init()
-        self.main_loop()
+        main_choice = self.main_loop()
+        if main_choice == "1":
+            category_choice = self.category_loop()
+            product_choice = self.product_loop(category_choice)
+            self.substituts_loop(product_choice)
+        if main_choice == "2":
+
+            

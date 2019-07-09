@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-from client import client
+from client import Client
 
 
 def main():
