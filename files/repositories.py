@@ -130,18 +130,17 @@ class ProductRepository(Repository):
     def create_table(self):
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
-                id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                id BIGINT UNSIGNED NOT NULL,
                 name VARCHAR(140) NOT NULL,
                 nutrition_grade char NOT NULL,
                 url varchar(255),
-                brand VARCHAR(100),
                 PRIMARY KEY (id)
             )
         """)
 
         self.db.query("""
             CREATE TABLE IF NOT EXISTS product_store (
-                product_id int unsigned,
+                product_id bigint unsigned,
                 store_id int unsigned,
                 CONSTRAINT pfk_product
                     FOREIGN KEY  (product_id)
@@ -155,14 +154,13 @@ class ProductRepository(Repository):
 
     def save(self, product):
         self.db.query(f"""
-            INSERT INTO {self.table} (id, name)
-            VALUES (:id, :name)
-            ON DUPLICATE KEY UPDATE  name = :name
+            INSERT INTO {self.table} (id, name, nutrition_grade, url)
+            VALUES (:id, :name, :nutrition_grade, :url)
         """, **vars(product))
 
         return product
 
-    def add_product(self, product, store):
+    def add_store(self, product, store):
         self.db.query("""
             INSERT IGNORE INTO product_store(product_id, store_id)
             VALUES (:product_id, :store_id)
@@ -217,14 +215,14 @@ class CategoryRepository(Repository):
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                category VARCHAR(140) NOT NULL,
+                name VARCHAR(140) NOT NULL,
                 PRIMARY KEY (id)
             )
         """)
 
         self.db.query("""
             CREATE TABLE IF NOT EXISTS product_category (
-                product_id int unsigned,
+                product_id bigint unsigned,
                 category_id int unsigned,
                 CONSTRAINT pfk_product_2
                     FOREIGN KEY (product_id)
