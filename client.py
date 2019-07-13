@@ -26,7 +26,7 @@ class Client:
         """ Category menu """
         while True:
             print("Sélectionnez la catégorie en entrant son numéro parmis les choix suivants :")
-            for i, category in enumerate(CATEGORY_LIST)
+            for i, category in enumerate(CATEGORY_LIST):
                 print(f"{i+1} - {category}"
             category_choice = input()
             if category_choice.isdigit():
