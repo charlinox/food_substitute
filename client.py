@@ -96,6 +96,22 @@ class Client:
                 elif save_choice == "N":
                     start()
 
+    def favorite_display(self)
+        """  Menu displaying the details of the original and substitued products  """
+        favorites = Favorite.objects.get_all_favorite()
+        print(f"Le produit original  ==>  Le produit substitué\n")
+        for favorite in favorites:
+            i=+ 1
+            print(f"{original_id.name}".center(22) + f"{substitut_id.name}".center(22) + "\n")
+            if i % 10 =0:
+                print("Souhaitez vous afficher les substituts suivants (O/N) ?")
+            again_choice = inputs().upper()
+            if again_choice == "O":
+                continue
+            elif again_choice == "N":
+                start()
+
+
     def start():
         """  Main frame  """
         main_choice = self.main_loop()
@@ -105,12 +121,11 @@ class Client:
             substitut_choice = self.substituts_loop(product_choice)
             favorite = self.substitut_display(substitut_choice, product_choice)
         if main_choice == "2":
-            favorites = Favorite.objects.get_all_favorite()
-            print(f"Le produit original  ==>  Le produit substitué\n")
-            for favorite in favorites:
-                print(f"{original_id.name}".center(22))
-                print(f"{substitut_id.name}".center(22) + "\n")
-                
+            favorite_display()
+        if main_choice == "3":
+            pass
+
+        
 
 
             

@@ -274,31 +274,14 @@ class FavoriteRepository(Repository):
         favorite = (substitut_choice.id, product_choice.id)
         return favorite
 
-    # def get_all_by_favorite(self, store):
-    #     products = self.db.query(f"""
-    #         SELECT product.id, product.name from store
-    #         JOIN product_store ON product_store.store_id = store.id
-    #         JOIN product ON product_store.product_id = product.id
-    #         WHERE store.id = :id
-    #     """, id=store.id).all(as_dict=True)
-    #     return [self.model(**product) for product in products]
-
-    # def get_all_favorite(self, store):
-    #     products = self.db.query(f"""
-    #         SELECT product.id, product.name from product
-    #         JOIN product_store ON product_store.store_id = store.id
-    #         JOIN product ON product_store.product_id = product.id
-    #         WHERE store.id = :id
-    #     """, id=store.id).all(as_dict=True)
-    #     return [self.model(**product) for product in products]
-
-    def get_all_substitut_id(self):
+    def get_all_favorite(self):
         products = self.db.query(f"""
             SELECT product.id, product.name FROM product
-            JOIN favorite ON favorite.original_id = product.id
             WHERE 
-                product.id = original_id
-
-            substitut_id, original_id from favorite
+                product.id IN (
+                    SELECT original_id, substitut_id
+                    FROM {self.table}
+                    GROUP BY original_id
+                ) 
         """).all(as_dict=True)
         return [self.model(**product) for product in products]
