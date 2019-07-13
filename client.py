@@ -11,7 +11,6 @@ class Client:
 
     def main_loop(self):
         """ Main menu """
-
         start_menu = 0
         while True:
             print(
@@ -23,7 +22,6 @@ class Client:
             if main_choice in ("1", "2", "3"):
                 return main_choice
         
-
     def category_loop(self):
         """ Category menu """
         while True:
@@ -58,33 +56,45 @@ class Client:
 
     def substituts_loop(self, product_choice):
         """ Menu displaying the three best substituts """
+        while True:
             print("Sélectionnez un substitut en entrant son numéro parmis les choix suivants :")
-        best_substituts = Product.objects.fine_substituts(name=product_choice)
-        list_substituts = []
-        for i, substitut in enumerate(best_substituts.products)
-            list_substituts[i] = append(substitut)
-                print(f"{i+1} - {substitut}"
-        print(
-                f"Voici les trois meilleurs substituts à ce produit : {}\n"
-                "Les magasins ou l'acheter :\n"
-                for store in Stores.objects.get
-                "3 - Sortir du programme.\n"
-            )
+            best_substituts = Product.objects.fine_substituts(product_choice)
+            list_substituts = []
+            for i, substitut in enumerate(best_substituts.substitut)
+                if i < 3:
+                    print(f"{i+1} - {substitut}"
+                    list_substituts[i] = append(substitut)
+                else:
+                    break
+            substitut_choice= = input()
+            if substitut_choice.isdigit():
+                substitut_choice = int(substitut_choice)
+                if 0 < substitut_choice <= 3:
+                    return list_substituts[i-1]
 
-        #   name
-        #   stores
-        #   url
 
-        print("Souhaitez vous enregistrer le résultat dans la base de données (O/N) ?")
-        save_choice = inputs().upper()
+    def substitut_display(self, substitut_choice, product_choice):
+        """ Menu displaying the details of the chosen substitut """
         while stay:
-            if save_choice == "O":
-                # Enregistrer en bdd le produit original et son substitut
-                stay = False
-            elif save_choice == "N":
-                stay = False
+            print(
+                "Voici les détails du substitut que vous avez sélectionné :\n"
+                "Nom du produit : {substitut_choice.product.name}\n"
+                "Au moins un magasin ou l'acheter :\n"
+            )
+            stores = Stores.objects.get_some_by_product(substitut_choice, 3)
+            for store in stores:
+                print(f"   {store.name}\n")
+            print(
+                "Score nutritionnel : {substitut_choice.product.nutrition_grade}\n"
+                "Adresse web du produit : {substitut_choice.product.url}\n\n"
+                "Souhaitez vous enregistrer le résultat dans la base de données (O/N) ?"
 
-        
+                save_choice = inputs().upper()
+                if save_choice == "O":
+                    Favorite.objects.save(product_choice, substitut_choice)
+                    start()
+                elif save_choice == "N":
+                    start()
 
     def start():
         """  Main frame  """
@@ -92,7 +102,15 @@ class Client:
         if main_choice == "1":
             category_choice = self.category_loop()
             product_choice = self.product_loop(category_choice)
-            self.substituts_loop(product_choice)
+            substitut_choice = self.substituts_loop(product_choice)
+            favorite = self.substitut_display(substitut_choice, product_choice)
         if main_choice == "2":
+            favorites = Favorite.objects.get_all_favorite()
+            print(f"Le produit original  ==>  Le produit substitué\n")
+            for favorite in favorites:
+                print(f"{original_id.name}".center(22))
+                print(f"{substitut_id.name}".center(22) + "\n")
+                
+
 
             

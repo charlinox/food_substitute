@@ -113,13 +113,14 @@ class StoreRepository(Repository):
             VALUES (:product_id, :store_id)
         """, product_id=product.id, store_id=store.id)
 
-    def get_all_by_product(self, product):
+    def get_some_by_product(self, product, how_many):
         stores = self.db.query(f"""
             SELECT store.id, store.name from store
             JOIN product_store ON product_store.store_id = store.id
             JOIN product ON product_store.product_id = product.id
             WHERE product.id = :id
-        """, id=product.id).all(as_dict=True)
+            LIMIT :how_many
+        """, id=product.id, how_many=how_many).all(as_dict=True)
         return [self.model(**store) for store in stores]
 
 
@@ -182,8 +183,8 @@ class ProductRepository(Repository):
         """, product_id=product.id, category_id=category.id)
 
     def fine_substituts(self, product_choice):
-        products = self.db.query("""
-        SELECT product.id, count(*) FROM product 
+        substituts = self.db.query("""
+        SELECT  product.id, product.name, product.nutrition_grade, product.url, count(*) FROM product 
         JOIN product_category ON product.id = product_category.product_id
         WHERE 
             product.id != :product_choice_id
@@ -204,7 +205,7 @@ class ProductRepository(Repository):
         -- On ordonne par nombre décroissant de tags communs
         ORDER BY count(*) DESC, MAX(:product_choice_nutrition_grade) ASC
         """, product_choice_id=product_choice.id, product_choice_nutrition_grade=product_choice.nutrition_grade)
-        return [self.model(**product) for product in products]
+        return [self.model(**substitut) for substitut in substituts]
 
 
 class CategoryRepository(Repository):
@@ -265,19 +266,39 @@ class FavoriteRepository(Repository):
             )
         """)
 
-    def save(self, favorite):
+    def save(self, substitut_choice, product_choice):
         self.db.query(f"""
             INSERT INTO {self.table} (substitut_id, original_id)
             VALUES (:substitut_id, :original_id)
-        """, **vars(favorite))
-
+        """, substitut_id=substitut_choice.id, original_id=product_choice.id)
+        favorite = (substitut_choice.id, product_choice.id)
         return favorite
 
-    def get_all_by_favorite(self, store):
+    # def get_all_by_favorite(self, store):
+    #     products = self.db.query(f"""
+    #         SELECT product.id, product.name from store
+    #         JOIN product_store ON product_store.store_id = store.id
+    #         JOIN product ON product_store.product_id = product.id
+    #         WHERE store.id = :id
+    #     """, id=store.id).all(as_dict=True)
+    #     return [self.model(**product) for product in products]
+
+    # def get_all_favorite(self, store):
+    #     products = self.db.query(f"""
+    #         SELECT product.id, product.name from product
+    #         JOIN product_store ON product_store.store_id = store.id
+    #         JOIN product ON product_store.product_id = product.id
+    #         WHERE store.id = :id
+    #     """, id=store.id).all(as_dict=True)
+    #     return [self.model(**product) for product in products]
+
+    def get_all_substitut_id(self):
         products = self.db.query(f"""
-            SELECT product.id, product.name from store
-            JOIN product_store ON product_store.store_id = store.id
-            JOIN product ON product_store.product_id = product.id
-            WHERE store.id = :id
-        """, id=store.id).all(as_dict=True)
+            SELECT product.id, product.name FROM product
+            JOIN favorite ON favorite.original_id = product.id
+            WHERE 
+                product.id = original_id
+
+            substitut_id, original_id from favorite
+        """).all(as_dict=True)
         return [self.model(**product) for product in products]
