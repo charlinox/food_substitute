@@ -92,9 +92,9 @@ class Client:
                 save_choice = inputs().upper()
                 if save_choice == "O":
                     Favorite.objects.save(product_choice, substitut_choice)
-                    start()
+                    self.start()
                 elif save_choice == "N":
-                    start()
+                    self.start()
 
     def favorite_display(self)
         """  Menu displaying the details of the original and substitued products  """
@@ -109,10 +109,11 @@ class Client:
             if again_choice == "O":
                 continue
             elif again_choice == "N":
-                start()
+                self.start()
+        self.start()
 
 
-    def start():
+    def start(self):
         """  Main frame  """
         main_choice = self.main_loop()
         if main_choice == "1":
@@ -121,7 +122,7 @@ class Client:
             substitut_choice = self.substituts_loop(product_choice)
             favorite = self.substitut_display(substitut_choice, product_choice)
         if main_choice == "2":
-            favorite_display()
+            self.favorite_display()
         if main_choice == "3":
             pass
 
