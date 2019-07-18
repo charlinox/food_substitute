@@ -19,16 +19,15 @@ class Repository:
         rows = self.db.query("""
             SELECT LAST_INSERT_ID() AS id
         """)
-
         for row in rows:
             return row['id']
 
     def filter(self, **search_terms):
         """Searches objects in the database matching the provided criteria."""
         conditions = " AND ".join(
-            f"{term} = :{term}"
+            [f"{term} = :{term}"
             for term, value in search_terms.items()
-            if value is not None
+            if value is not None]
         ).strip()
 
         if conditions:
@@ -158,7 +157,6 @@ class ProductRepository(Repository):
             INSERT INTO {self.table} (id, name, nutrition_grade, url)
             VALUES (:id, :name, :nutrition_grade, :url)
         """, **vars(product))
-
         return product
 
     def add_store(self, product, store):
@@ -183,6 +181,7 @@ class ProductRepository(Repository):
         """, product_id=product.id, category_id=category.id)
 
     def fine_substituts(self, product_choice):
+        """  """
         substituts = self.db.query("""
         SELECT  product.id, product.name, product.nutrition_grade, product.url, count(*) FROM product 
         JOIN product_category ON product.id = product_category.product_id
@@ -260,8 +259,8 @@ class FavoriteRepository(Repository):
     def create_table(self):
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
-                substitut_id int unsigned references product(id),
-                original_id int unsigned references product(id),
+                substitut_id bigint unsigned references product(id),
+                original_id bigint unsigned references product(id),
                 PRIMARY KEY (substitut_id, original_id)
             )
         """)
@@ -276,12 +275,11 @@ class FavoriteRepository(Repository):
 
     def get_all_favorite(self):
         products = self.db.query(f"""
-            SELECT product.id, product.name FROM product
-            WHERE 
-                product.id IN (
-                    SELECT original_id, substitut_id
-                    FROM {self.table}
-                    GROUP BY original_id
-                ) 
+            SELECT original.`name` as "original product", substitute.`name` as "substitute", substitute.`url`, substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') as stores FROM favorite as fav
+            JOIN product as original ON original.id = fav.original_id
+            JOIN product as substitute ON substitute.id = fav.substitut_id
+            JOIN product_store ON product_store.product_id = substitute.id
+            JOIN store ON store.id = product_store.store_id
+            GROUP BY original.name, substitute.name, substitute.url, substitute.nutrition_grade
         """).all(as_dict=True)
         return [self.model(**product) for product in products]

@@ -18,7 +18,7 @@ class Client:
                 "2 - Retrouver mes aliments substitués.\n"
                 "3 - Sortir du programme.\n"
             )
-            main_choice = inputs()
+            main_choice = input("\n")
             if main_choice in ("1", "2", "3"):
                 return main_choice
         
@@ -27,8 +27,8 @@ class Client:
         while True:
             print("Sélectionnez la catégorie en entrant son numéro parmis les choix suivants :")
             for i, category in enumerate(CATEGORY_LIST):
-                print(f"{i+1} - {category}"
-            category_choice = input()
+                print(f"{i+1} - {category}")
+            category_choice = input("\n")
             if category_choice.isdigit():
                 category_choice = int(category_choice)
                 if 0 < category_choice <= len(CATEGORY_LIST):
@@ -39,16 +39,16 @@ class Client:
     def product_loop(self, category_choice):
         """ Product menu """
         while True:
-            print("Sélectionnez l'aliment en entrant son numéro parmis les choix suivants :")
+            print("Sélectionnez un produit en entrant son numéro parmis les choix suivants :")
             category = Category.objects.get(name=category_choice)
             list_product = []
-            for i, product in enumerate(category.products)
-                list_product[i] = append(product)
+            for i, product in enumerate(category.products):
+                list_product.append(product)
                 if i < 10:
-                    print(f"{i+1} - {product}"
+                    print(f"{i+1} - {product}")
                 else:
                     break
-            product_choice= = input()
+            product_choice = input("\n")
             if product_choice.isdigit():
                 product_choice = int(product_choice)
                 if 0 < product_choice <= 10:
@@ -60,13 +60,13 @@ class Client:
             print("Sélectionnez un substitut en entrant son numéro parmis les choix suivants :")
             best_substituts = Product.objects.fine_substituts(product_choice)
             list_substituts = []
-            for i, substitut in enumerate(best_substituts.substitut)
+            for i, substitut in enumerate(best_substituts.substitut):
                 if i < 3:
-                    print(f"{i+1} - {substitut}"
+                    print(f"{i+1} - {substitut}")
                     list_substituts[i] = append(substitut)
                 else:
                     break
-            substitut_choice= = input()
+            substitut_choice = input("\n")
             if substitut_choice.isdigit():
                 substitut_choice = int(substitut_choice)
                 if 0 < substitut_choice <= 3:
@@ -88,28 +88,27 @@ class Client:
                 "Score nutritionnel : {substitut_choice.product.nutrition_grade}\n"
                 "Adresse web du produit : {substitut_choice.product.url}\n\n"
                 "Souhaitez vous enregistrer le résultat dans la base de données (O/N) ?"
+            )
+            save_choice = input("\n").upper()
+            if save_choice == "O":
+                Favorite.objects.save(product_choice, substitut_choice)
+                self.start()
+            elif save_choice == "N":
+                self.start()
 
-                save_choice = inputs().upper()
-                if save_choice == "O":
-                    Favorite.objects.save(product_choice, substitut_choice)
-                    self.start()
-                elif save_choice == "N":
-                    self.start()
-
-    def favorite_display(self)
+    def favorite_display(self):
         """  Menu displaying the details of the original and substitued products  """
         favorites = Favorite.objects.get_all_favorite()
         print(f"Le produit original  ==>  Le produit substitué\n")
-        for favorite in favorites:
-            i=+ 1
-            print(f"{original_id.name}".center(22) + f"{substitut_id.name}".center(22) + "\n")
-            if i % 10 =0:
+        for i, favorite in enumerate(favorites):
+            print(f"{original_id.name}   ==>   {substitut_id.name}\n")
+            if i % 10 == 0 and i != 0:
                 print("Souhaitez vous afficher les substituts suivants (O/N) ?")
-            again_choice = inputs().upper()
-            if again_choice == "O":
-                continue
-            elif again_choice == "N":
-                self.start()
+                again_choice = input("\n").upper()
+                if again_choice == "O":
+                    continue
+                elif again_choice == "N":
+                    self.start()
         self.start()
 
 
