@@ -2,7 +2,6 @@
 # coding: utf-8
 
 from files.models import Product, Store, Category, Favorite
-from bddinit import bdd_init
 from files.constants import *
 
 
@@ -11,12 +10,11 @@ class Client:
 
     def main_loop(self):
         """ Main menu """
-        start_menu = 0
         while True:
             print(
-                "1 - Quel aliment souhaitez-vous remplacer ?\n"
-                "2 - Retrouver mes aliments substitués.\n"
-                "3 - Sortir du programme.\n"
+                "  1 - Substituer un aliment\n"
+                "  2 - Retrouver mes aliments substitués\n"
+                "  3 - Sortir du programme\n"
             )
             main_choice = input("\n")
             if main_choice in ("1", "2", "3"):
@@ -25,45 +23,44 @@ class Client:
     def category_loop(self):
         """ Category menu """
         while True:
-            print("Sélectionnez la catégorie en entrant son numéro parmis les choix suivants :")
+            print("\n  Sélectionnez la catégorie en entrant son numéro parmis les choix suivants :")
             for i, category in enumerate(CATEGORY_LIST):
-                print(f"{i+1} - {category}")
-            category_choice = input("\n")
+                print(f"  {i+1} - {category}")
+            category_choice = input()
             if category_choice.isdigit():
                 category_choice = int(category_choice)
                 if 0 < category_choice <= len(CATEGORY_LIST):
                     return CATEGORY_LIST[category_choice-1]
-
         return category_choice
 
     def product_loop(self, category_choice):
         """ Product menu """
         while True:
-            print("Sélectionnez un produit en entrant son numéro parmis les choix suivants :")
-            category = Category.objects.get(name=category_choice)
+            print("  Sélectionnez l'aliment en entrant son numéro parmis les choix suivants :")
+            categories = Category.objects.get(name=category_choice)
             list_product = []
-            for i, product in enumerate(category.products):
+            for i, product in enumerate(categories.products):
                 list_product.append(product)
                 if i < 10:
-                    print(f"{i+1} - {product}")
+                    print(f"  {i+1} - {product.name}")
                 else:
                     break
-            product_choice = input("\n")
+            product_choice = input()
             if product_choice.isdigit():
                 product_choice = int(product_choice)
                 if 0 < product_choice <= 10:
                     return list_product[i-1]
 
     def substituts_loop(self, product_choice):
-        """ Menu displaying the three best substituts """
+        """ Menu displaying the three best substitutes """
         while True:
-            print("Sélectionnez un substitut en entrant son numéro parmis les choix suivants :")
+            print("  Sélectionnez un substitut en entrant son numéro parmis les choix suivants :")
             best_substituts = Product.objects.fine_substituts(product_choice)
             list_substituts = []
-            for i, substitut in enumerate(best_substituts.substitut):
-                if i < 3:
-                    print(f"{i+1} - {substitut}")
-                    list_substituts[i] = append(substitut)
+            for i, substitute in enumerate(best_substituts.substitute):
+                if i < 10:
+                    print(f"  {i+1} - {substitute}")
+                    list_substituts[i] = append(substitute)
                 else:
                     break
             substitut_choice = input("\n")
@@ -74,7 +71,7 @@ class Client:
 
 
     def substitut_display(self, substitut_choice, product_choice):
-        """ Menu displaying the details of the chosen substitut """
+        """ Menu displaying the details of the chosen substitute """
         while stay:
             print(
                 "Voici les détails du substitut que vous avez sélectionné :\n"
@@ -99,10 +96,15 @@ class Client:
     def favorite_display(self):
         """  Menu displaying the details of the original and substitued products  """
         favorites = Favorite.objects.get_all_favorite()
-        print(f"Le produit original  ==>  Le produit substitué\n")
         for i, favorite in enumerate(favorites):
-            print(f"{original_id.name}   ==>   {substitut_id.name}\n")
-            if i % 10 == 0 and i != 0:
+            print(
+                "Le produit original     ==>  {favorites.original}\n"
+                "   Le produit substitué ==>  {favorites.substitute}\n"
+                "   url                     : {favorites.url}\n"
+                "   nutrition_grade         : {favorites.nutrition_grade}\n"
+                "   Magasins                : {favorites.stores}\n\n"
+                )
+            if i % 4 == 0 and i != 0:
                 print("Souhaitez vous afficher les substituts suivants (O/N) ?")
                 again_choice = input("\n").upper()
                 if again_choice == "O":

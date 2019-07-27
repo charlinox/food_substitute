@@ -38,6 +38,9 @@ class Repository:
             {conditions}
         """, **search_terms).all(as_dict=True)
 
+        # for instance in instances: # Test print de l'instance
+        #     print(instance)
+
         return [
             self.model(**instance)
             for instance in instances
@@ -171,7 +174,7 @@ class ProductRepository(Repository):
             JOIN product_store ON product_store.store_id = store.id
             JOIN product ON product_store.product_id = product.id
             WHERE store.id = :id
-        """, id=store.id).all(as_dict=True)
+        """, id=product.id).all(as_dict=True)
         return [self.model(**product) for product in products]
 
     def add_category(self, product, category):
@@ -182,7 +185,7 @@ class ProductRepository(Repository):
 
     def fine_substituts(self, product_choice):
         """  """
-        substituts = self.db.query("""
+        substitutes = self.db.query("""
         SELECT  product.id, product.name, product.nutrition_grade, product.url, count(*) FROM product 
         JOIN product_category ON product.id = product_category.product_id
         WHERE 
@@ -204,7 +207,7 @@ class ProductRepository(Repository):
         -- On ordonne par nombre décroissant de tags communs
         ORDER BY count(*) DESC, MAX(:product_choice_nutrition_grade) ASC
         """, product_choice_id=product_choice.id, product_choice_nutrition_grade=product_choice.nutrition_grade)
-        return [self.model(**substitut) for substitut in substituts]
+        return [self.model(**substitute) for substitute in substitutes]
 
 
 class CategoryRepository(Repository):
@@ -244,11 +247,11 @@ class CategoryRepository(Repository):
 
     def get_all_by_category(self, category):
         products = self.db.query(f"""
-            SELECT product.id, product.name from category
+            SELECT product.id, product.name from product
             JOIN product_category ON product_category.product_id = product.id
-            JOIN product ON product_category.category_id = category.id
-            WHERE product.id = :id
-        """, id=product.id).all(as_dict=True)
+            JOIN category ON product_category.category_id = category.id
+            WHERE category.id = :id
+        """, id=category.id).all(as_dict=True)
         return [self.model(**product) for product in products]
 
 
@@ -275,11 +278,14 @@ class FavoriteRepository(Repository):
 
     def get_all_favorite(self):
         products = self.db.query(f"""
-            SELECT original.`name` as "original product", substitute.`name` as "substitute", substitute.`url`, substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') as stores FROM favorite as fav
+            SELECT original.`name` as "original", substitute.`name` as "substitute", substitute.`url`, \
+                substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') \
+                    as stores FROM favorite as fav
             JOIN product as original ON original.id = fav.original_id
             JOIN product as substitute ON substitute.id = fav.substitut_id
             JOIN product_store ON product_store.product_id = substitute.id
             JOIN store ON store.id = product_store.store_id
-            GROUP BY original.name, substitute.name, substitute.url, substitute.nutrition_grade
-        """).all(as_dict=True)
+            GROUP BY original.name, substitute.name, substitute.url, substitute.nutrition_grade, \
+                substitute.stores
+        """).all(as_dict=True) # Un moyen de trier les stores en fonction du nombre de produits par store dans la base off ? 
         return [self.model(**product) for product in products]

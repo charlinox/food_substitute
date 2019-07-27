@@ -10,6 +10,14 @@ class Model:
         """Saves the model in the database."""
         self.objects.save(self)
 
+    def __repr__(self):
+        """Formats a string representing the model."""
+        attributes = ", ".join(
+            f"{key}={value}"
+            for key, value in vars(self).items()
+        )
+        return f"{type(self).__name__}({attributes})"
+
 class Store(Model):
 
     def __init__(self, name, id=None, **kwargs):
@@ -51,6 +59,8 @@ class Product(Model):
         """Creates products from openfoodfacts data."""
         if not (product_name.strip() or nutrition_grades.strip() or stores.strip()):
             raise TypeError("product_name, nutrition_grades and stores must be non-blank fields")
+        if len("%s" % code) > 19: # bigint = 19 digits
+            raise TypeError("product.id is too big")
 
         product = cls.objects.get_or_create(
             name=product_name.lower().strip(),
@@ -96,6 +106,6 @@ class Category(Model):
     @property
     def products(self):
         """Loads related products."""
-        return Product.objects.get_all_by_category(self)
+        return Category.objects.get_all_by_category(self)
 
 Category.objects = repositories.CategoryRepository(Category)
