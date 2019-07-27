@@ -30,6 +30,8 @@ class Repository:
             if value is not None]
         ).strip()
 
+        print(self, conditions) #test
+
         if conditions:
             conditions = f"WHERE {conditions}"
 
@@ -38,8 +40,8 @@ class Repository:
             {conditions}
         """, **search_terms).all(as_dict=True)
 
-        # for instance in instances: # Test print de l'instance
-        #     print(instance)
+        for instance in instances: #test
+            print(instance)
 
         return [
             self.model(**instance)
@@ -90,6 +92,7 @@ class StoreRepository(Repository):
     table = 'store'
 
     def create_table(self):
+        """Creates the store table on local bdd.""" 
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -99,6 +102,7 @@ class StoreRepository(Repository):
         """)
 
     def save(self, store):
+        """Saves the store on local bdd.""" 
         self.db.query(f"""
             INSERT INTO {self.table} (id, name)
             VALUES (:id, :name)
@@ -110,12 +114,14 @@ class StoreRepository(Repository):
         return store
 
     def add_product(self, store, product):
+        """Adds product on product_store on local bdd."""
         self.db.query("""
             INSERT IGNORE INTO product_store(product_id, store_id)
             VALUES (:product_id, :store_id)
         """, product_id=product.id, store_id=store.id)
 
     def get_some_by_product(self, product, how_many):
+        """Gets some stores for a product on local bdd."""
         stores = self.db.query(f"""
             SELECT store.id, store.name from store
             JOIN product_store ON product_store.store_id = store.id
@@ -131,6 +137,7 @@ class ProductRepository(Repository):
     table = 'product'
 
     def create_table(self):
+        """Creates the product  and product_store tables on local bdd."""
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 id BIGINT UNSIGNED NOT NULL,
@@ -156,6 +163,7 @@ class ProductRepository(Repository):
         """)
 
     def save(self, product):
+        """Saves the product on local bdd."""
         self.db.query(f"""
             INSERT INTO {self.table} (id, name, nutrition_grade, url)
             VALUES (:id, :name, :nutrition_grade, :url)
@@ -163,12 +171,14 @@ class ProductRepository(Repository):
         return product
 
     def add_store(self, product, store):
+        """Adds a store on product_store."""
         self.db.query("""
             INSERT IGNORE INTO product_store(product_id, store_id)
             VALUES (:product_id, :store_id)
         """, product_id=product.id, store_id=store.id)
 
     def get_favorite_by_product(self, product):
+        """Adds a store on product_store."""
         products = self.db.query(f"""
             SELECT product.id, product.name from store
             JOIN product_store ON product_store.store_id = store.id
@@ -178,13 +188,14 @@ class ProductRepository(Repository):
         return [self.model(**product) for product in products]
 
     def add_category(self, product, category):
+        """Adds a category on product_category."""
         self.db.query("""
             INSERT IGNORE INTO product_category(product_id, category_id)
             VALUES (:product_id, :category_id)
         """, product_id=product.id, category_id=category.id)
 
-    def fine_substituts(self, product_choice):
-        """  """
+    def fine_substitutes(self, product_choice):
+        """Finds better substitutes to the one provided."""
         substitutes = self.db.query("""
         SELECT  product.id, product.name, product.nutrition_grade, product.url, count(*) FROM product 
         JOIN product_category ON product.id = product_category.product_id
@@ -215,6 +226,7 @@ class CategoryRepository(Repository):
     table = 'category'
 
     def create_table(self):
+        """Creates the category and product_category tables."""
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -238,6 +250,7 @@ class CategoryRepository(Repository):
         """)
 
     def save(self, category):
+        """Saves the category into bdd."""
         self.db.query(f"""
             INSERT INTO {self.table} (id, name)
             VALUES (:id, :name)
@@ -246,8 +259,9 @@ class CategoryRepository(Repository):
         return category
 
     def get_all_by_category(self, category):
+        """Gets all the products for a given category."""
         products = self.db.query(f"""
-            SELECT product.id, product.name from product
+            SELECT product.id, product.name, product.nutrition_grade from product
             JOIN product_category ON product_category.product_id = product.id
             JOIN category ON product_category.category_id = category.id
             WHERE category.id = :id
@@ -260,6 +274,7 @@ class FavoriteRepository(Repository):
     table = 'favorite'
 
     def create_table(self):
+        """Creates the favorite table."""
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 substitut_id bigint unsigned references product(id),
@@ -268,15 +283,17 @@ class FavoriteRepository(Repository):
             )
         """)
 
-    def save(self, substitut_choice, product_choice):
+    def save(self, substitute_choice, product_choice):
+        """Creates the favorite table."""
         self.db.query(f"""
             INSERT INTO {self.table} (substitut_id, original_id)
             VALUES (:substitut_id, :original_id)
-        """, substitut_id=substitut_choice.id, original_id=product_choice.id)
-        favorite = (substitut_choice.id, product_choice.id)
+        """, substitut_id=substitute_choice.id, original_id=product_choice.id)
+        favorite = (substitute_choice.id, product_choice.id)
         return favorite
 
     def get_all_favorite(self):
+        """Get all the favorites."""
         products = self.db.query(f"""
             SELECT original.`name` as "original", substitute.`name` as "substitute", substitute.`url`, \
                 substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') \
