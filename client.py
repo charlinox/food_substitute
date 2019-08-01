@@ -61,10 +61,10 @@ class Client:
             best_substitutes = Product.objects.fine_substitutes(product_choice)
             list_substitutes = []
             print("\n")
-            for i, substitute in enumerate(best_substitutes.substitute):
+            for i, substitute in enumerate(best_substitutes):
                 if i < 10:
-                    print(f"  {i+1} - {substitute}")
-                    list_substitutes[i] = append(substitute)
+                    print(f"  {i+1} - {substitute.name} - Valeur nutritionnelle : {substitute.nutrition_grade.upper()}")
+                    list_substitutes.append(substitute)
                 else:
                     break
             substitute_choice = input("\n  Sélectionnez un substitut en entrant son numéro parmis les choix suivants : ")
@@ -76,9 +76,10 @@ class Client:
 
     def substitut_display(self, substitute_choice, product_choice):
         """ Menu displaying the details of the chosen substitute """
-        while stay:
+        while True:
             print(
-                "\n  Voici les détails du substitut que vous avez sélectionné :\n"
+                "\n"
+                "  Voici les détails du substitut que vous avez sélectionné :\n"
                 "  Nom du produit : {substitute_choice.product.name}\n"
                 "  Au moins un magasin ou l'acheter :\n"
             )
