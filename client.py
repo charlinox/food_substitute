@@ -36,12 +36,9 @@ class Client:
         """ Product menu """
         while True:
             category = Category.objects.get(name=category_choice)
-            
-            print(f"categorie = {category}")#test
-
             list_product = []
             print("\n")
-            for i, product in enumerate(category.products):
+            for i, product in enumerate(category.all_products):
                 list_product.append(product)
                 if i < 10:
                     print(f"  {i+1} - {product.name}")
@@ -51,41 +48,46 @@ class Client:
             if product_choice.isdigit():
                 product_choice = int(product_choice)
                 if 0 < product_choice <= 10:
-                    return list_product[i-1]
+                    return list_product[product_choice-1]
 
     def substitutes_loop(self, product_choice):
         """ Menu displaying the three best substitutes """
+        # product_choice = Product.objects.get(name=product_choice.name)
+        print (f"product_choice as product : {product_choice}") # Test
         while True:
             best_substitutes = Product.objects.fine_substitutes(product_choice)
+            print (f"best_substitutes : {best_substitutes}") # Test
             list_substitutes = []
             print("\n")
-            for i, substitute in enumerate(best_substitutes.substitute):
+            for i, substitute in enumerate(best_substitutes):
                 if i < 10:
-                    print(f"  {i+1} - {substitute}")
-                    list_substitutes[i] = append(substitute)
+                    print(f"  {i+1} - {substitute.name} - indice nutritionnel : {substitute.nutrition_grade.upper()}")
+                    list_substitutes.append(substitute)
                 else:
                     break
             substitute_choice = input("\n  Sélectionnez un substitut en entrant son numéro parmis les choix suivants : ")
             if substitute_choice.isdigit():
                 substitute_choice = int(substitute_choice)
                 if 0 < substitute_choice <= 10:
-                    return list_substitutes[i-1]
+                    return list_substitutes[substitute_choice-1]
 
 
     def substitut_display(self, substitute_choice, product_choice):
         """ Menu displaying the details of the chosen substitute """
-        while stay:
+        print (f"substitute_choice : {substitute_choice}, product_choice : {product_choice}") # Test
+        while True:
             print(
                 "\n  Voici les détails du substitut que vous avez sélectionné :\n"
-                "  Nom du produit : {substitute_choice.product.name}\n"
+                f"  Nom du produit : {substitute_choice.name}\n"
                 "  Au moins un magasin ou l'acheter :\n"
             )
-            stores = Stores.objects.get_some_by_product(substitute_choice, 3)
+            stores = Store.objects.get_some_by_product(substitute_choice, 3)
+            print (f"stores : {stores}")
             for store in stores:
                 print(f"   {store.name}\n")
             print(
-                "  Score nutritionnel : {substitute_choice.product.nutrition_grade}\n"
-                "  Adresse web du produit : {substitute_choice.product.url}\n"
+                f"  Score nutritionnel : {substitute_choice.nutrition_grade.upper()}\n"
+                f"  Adresse web du produit : {substitute_choice.url}\n"
             )
             save_choice = input("\n  Souhaitez vous enregistrer le résultat dans la base de données (O/N) ? : ").upper()
             if save_choice == "O":
@@ -119,7 +121,7 @@ class Client:
         """  Main frame  """
         print(
             "\n  Bienvenue dans cette application qui va vous permettre de "
-            "manger mieux grace à Open Food Facts !\n"
+            "  manger mieux grace à Open Food Facts !\n"
             "  Que souhaitez vous faire ?\n"
             )
         main_choice = self.main_loop()
@@ -132,6 +134,7 @@ class Client:
             self.favorite_display()
         if main_choice == "3":
             print("  Au revoir !")
+
 
         
 

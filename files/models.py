@@ -104,7 +104,7 @@ class Category(Model):
         self.id=id
 
     @property
-    def products(self):
+    def all_products(self):
         """Loads related products."""
         return Category.objects.get_all_by_category(self)
 

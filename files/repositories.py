@@ -30,8 +30,6 @@ class Repository:
             if value is not None]
         ).strip()
 
-        print(self, conditions) #test
-
         if conditions:
             conditions = f"WHERE {conditions}"
 
@@ -39,9 +37,6 @@ class Repository:
             SELECT * from {self.table}
             {conditions}
         """, **search_terms).all(as_dict=True)
-
-        for instance in instances: #test
-            print(instance)
 
         return [
             self.model(**instance)
@@ -193,6 +188,17 @@ class ProductRepository(Repository):
             INSERT IGNORE INTO product_category(product_id, category_id)
             VALUES (:product_id, :category_id)
         """, product_id=product.id, category_id=category.id)
+    
+    def get_all_by_category(self, category):
+        """Gets all the products for a given category."""
+        products = self.db.query(f"""
+            SELECT product.id, product.name, product.nutrition_grade from product
+            JOIN product_category ON product_category.product_id = product.id
+            JOIN category ON product_category.category_id = category.id
+            WHERE category.id = :id
+        """, id=category.id).all(as_dict=True)
+        return [self.model(**product) for product in products]
+
 
     def fine_substitutes(self, product_choice):
         """Finds better substitutes to the one provided."""
