@@ -26,7 +26,7 @@ class Store(Model):
         self.id = id
 
     @property
-    def products(self):
+    def all_products(self):
         """Loads related products."""
         return Product.objects.get_all_by_store(self)
 
@@ -45,12 +45,12 @@ class Product(Model):
 
 
     @property
-    def stores(self):
+    def all_stores(self):
         """Loads related stores."""
         return Store.objects.get_all_by_product(self)
 
     @property
-    def categories(self):
+    def all_categories(self):
         """Loads related category."""
         return Category.objects.get_all_by_product(self)
 
@@ -81,6 +81,10 @@ class Product(Model):
             cls.objects.add_category(product, category)
         return product
 
+    @property
+    def all_products(self):
+        """Loads related products."""
+        return Product.objects.get_all_by_category(self)
 
 
 Product.objects = repositories.ProductRepository(Product)

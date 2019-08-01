@@ -188,7 +188,7 @@ class ProductRepository(Repository):
             INSERT IGNORE INTO product_category(product_id, category_id)
             VALUES (:product_id, :category_id)
         """, product_id=product.id, category_id=category.id)
-    
+
     def get_all_by_category(self, category):
         """Gets all the products for a given category."""
         products = self.db.query(f"""
@@ -198,8 +198,7 @@ class ProductRepository(Repository):
             WHERE category.id = :id
         """, id=category.id).all(as_dict=True)
         return [self.model(**product) for product in products]
-
-
+    
     def fine_substitutes(self, product_choice):
         """Finds better substitutes to the one provided."""
         substitutes = self.db.query("""
