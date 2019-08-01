@@ -36,9 +36,10 @@ class Client:
         """ Product menu """
         while True:
             category = Category.objects.get(name=category_choice)
+            products_per_category = Product.objects.get_all_by_category(category)
             list_product = []
             print("\n")
-            for i, product in enumerate(Product.all_products):
+            for i, product in enumerate(products_per_category):
                 list_product.append(product)
                 if i < 10:
                     print(f"  {i+1} - {product.name}")
