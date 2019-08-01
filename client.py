@@ -35,16 +35,18 @@ class Client:
     def product_loop(self, category_choice):
         """ Product menu """
         while True:
-            category = Category.objects.get(name=category_choice)
-            
-            print(f"categorie = {category}")#test
-
+            category_by_choice = Category.objects.get(name=category_choice)
+            # print(f"categorie = {category_by_choice}")#test
+            # category2 = category.products
+            # print(f"category.products = {category}")#test
+            products_by_category = Product.objects.get_all_by_category(category_by_choice)
+            # print(f"products_by_category = {products_by_category}")#test
             list_product = []
             print("\n")
-            for i, product in enumerate(category.products):
+            for i, product in enumerate(products_by_category):
                 list_product.append(product)
                 if i < 10:
-                    print(f"  {i+1} - {product.name}")
+                    print(f"  {i+1} - {product.name} - Valeur nutritionnelle : {product.nutrition_grade.upper()}")
                 else:
                     break
             product_choice = input("\n  Sélectionnez l'aliment en entrant son numéro parmis les choix suivants : ")

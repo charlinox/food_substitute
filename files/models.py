@@ -81,9 +81,13 @@ class Product(Model):
             cls.objects.add_category(product, category)
         return product
 
+    @property
+    def products(self):
+        """Loads related products."""
+        return Product.objects.get_all_by_category(self)
 
 
-Product.objects = repositories.ProductRepository(Product)
+Product.objects = repositories.ProductRepository(Product)   
 
 
 class Favorite(Model):
