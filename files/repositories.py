@@ -299,14 +299,13 @@ class FavoriteRepository(Repository):
     def get_all_favorite(self):
         """Get all the favorites."""
         products = self.db.query(f"""
-            SELECT original.`name` as "original", substitute.`name` as "substitute", substitute.`url`, \
-                substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') \
-                    as stores FROM favorite as fav
+            SELECT original.`name` as "product_as_original", substitute.`name` as "product_as_substitut", substitute.`url` as "url", \
+            substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') \
+            as stores FROM favorite as fav
             JOIN product as original ON original.id = fav.original_id
             JOIN product as substitute ON substitute.id = fav.substitut_id
             JOIN product_store ON product_store.product_id = substitute.id
             JOIN store ON store.id = product_store.store_id
-            GROUP BY original.name, substitute.name, substitute.url, substitute.nutrition_grade, \
-                substitute.stores
+            GROUP BY original.name, substitute.name, substitute.url, substitute.nutrition_grade
         """).all(as_dict=True) # Un moyen de trier les stores en fonction du nombre de produits par store dans la base off ? 
         return [self.model(**product) for product in products]

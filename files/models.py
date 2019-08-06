@@ -92,10 +92,13 @@ Product.objects = repositories.ProductRepository(Product)
 
 class Favorite(Model):
 
-    def __init__(self, product_as_original, product_as_substitut, **kwargs):
+    def __init__(self, product_as_original, product_as_substitut, url, nutrition_grade, stores, **kwargs):
         """Initializes the model."""
         self.product_as_original = product_as_original
         self.product_as_substitut = product_as_substitut
+        self.url = url
+        self.nutrition_grade = nutrition_grade
+        self.stores = stores
 
 Favorite.objects = repositories.FavoriteRepository(Favorite)
 

@@ -36,11 +36,7 @@ class Client:
         """ Product menu """
         while True:
             category_by_choice = Category.objects.get(name=category_choice)
-            # print(f"categorie = {category_by_choice}")#test
-            # category2 = category.products
-            # print(f"category.products = {category}")#test
             products_by_category = Product.objects.get_all_by_category(category_by_choice)
-            # print(f"products_by_category = {products_by_category}")#test
             list_product = []
             print("\n")
             for i, product in enumerate(products_by_category):
@@ -53,7 +49,7 @@ class Client:
             if product_choice.isdigit():
                 product_choice = int(product_choice)
                 if 0 < product_choice <= 10:
-                    return list_product[i-1]
+                    return list_product[product_choice-1]
 
     def substitutes_loop(self, product_choice):
         """ Menu displaying the three best substitutes """
@@ -71,7 +67,7 @@ class Client:
             if substitute_choice.isdigit():
                 substitute_choice = int(substitute_choice)
                 if 0 < substitute_choice <= 10:
-                    return list_substitutes[i-1]
+                    return list_substitutes[substitute_choice-1]
 
 
     def substitut_display(self, substitute_choice, product_choice):
@@ -80,15 +76,15 @@ class Client:
             print(
                 "\n"
                 "  Voici les détails du substitut que vous avez sélectionné :\n"
-                "  Nom du produit : {substitute_choice.product.name}\n"
-                "  Au moins un magasin ou l'acheter :\n"
+                f"  Nom du produit : {substitute_choice.name}\n"
+                "  Au moins un magasin ou l'acheter :"
             )
-            stores = Stores.objects.get_some_by_product(substitute_choice, 3)
+            stores = Store.objects.get_some_by_product(substitute_choice, 3)
             for store in stores:
-                print(f"   {store.name}\n")
+                print(f"    {store.name}")
             print(
-                "  Score nutritionnel : {substitute_choice.product.nutrition_grade}\n"
-                "  Adresse web du produit : {substitute_choice.product.url}\n"
+                f"  Score nutritionnel : {substitute_choice.nutrition_grade.upper()}\n"
+                f"  Adresse web du produit : {substitute_choice.url}\n"
             )
             save_choice = input("\n  Souhaitez vous enregistrer le résultat dans la base de données (O/N) ? : ").upper()
             if save_choice == "O":
@@ -102,18 +98,20 @@ class Client:
         favorites = Favorite.objects.get_all_favorite()
         for i, favorite in enumerate(favorites):
             print(
-                "\n  Le produit original     ==>  {favorites.original}\n"
-                "    Le produit substitué ==>  {favorites.substitute}\n"
-                "    url                     : {favorites.url}\n"
-                "    nutrition_grade         : {favorites.nutrition_grade}\n"
-                "    Magasins                : {favorites.stores}\n"
+                "\n"
+                f"Le produit original     ==>  {favorite.product_as_original}\n"
+                f"   Le produit substitué ==>  {favorite.product_as_substitut}\n"
+                f"   url                     : {favorite.url}\n"
+                f"   nutrition_grade         : {favorite.nutrition_grade.upper()}\n"
+                f"   Magasins                : {favorite.stores}\n"
                 )
             if i % 4 == 0 and i != 0:
-                print("\n  Souhaitez vous afficher les substitutes suivants (O/N) ?")
+                print("\n  Veuillez entrer 'O' pour afficher les substitutes suivants ou une autre touche pour revenir au menu principal : ")
                 again_choice = input("\n").upper()
                 if again_choice == "O":
                     continue
-                elif again_choice == "N":
+            if i % 4 != 0 or i == 0:
+                    print("\n  Fin de la liste.")
                     self.start()
         self.start()
 
