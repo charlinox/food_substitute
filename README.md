@@ -9,7 +9,9 @@ Features:
 The user is on the terminal that shows him the following choices:
 
 1 - Quel aliment souhaitez-vous remplacer ?
+
 2 - Retrouver mes aliments substitués
+
 3 - Sortir du programme
 
 The user selects 1. The program asks the user the following questions and the user selects the answers:
@@ -40,7 +42,9 @@ $ pip3 install pipenv ou $ pip install pipenv
 $ pipenv install
 
 First initialize the local database :
+
 $ pipenv run bddinit.py
 
 Then launch the app :
+
 $ pipenv run off.py
