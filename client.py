@@ -12,7 +12,8 @@ class Client:
         """ Main menu """
         while True:
             print(
-                "  1 - Substituer un aliment\n"
+                "\n"
+                "  1 - Quel aliment souhaitez-vous remplacer ?\n"
                 "  2 - Retrouver mes aliments substitués\n"
                 "  3 - Sortir du programme\n"
             )
@@ -35,14 +36,14 @@ class Client:
     def product_loop(self, category_choice):
         """ Product menu """
         while True:
-            category = Category.objects.get(name=category_choice)
-            products_per_category = Product.objects.get_all_by_category(category)
+            category_by_choice = Category.objects.get(name=category_choice)
+            products_by_category = Product.objects.get_all_by_category(category_by_choice)
             list_product = []
             print("\n")
-            for i, product in enumerate(products_per_category):
+            for i, product in enumerate(products_by_category):
                 list_product.append(product)
                 if i < 10:
-                    print(f"  {i+1} - {product.name}")
+                    print(f"  {i+1} - {product.name} - Valeur nutritionnelle : {product.nutrition_grade.upper()}")
                 else:
                     break
             product_choice = input("\n  Sélectionnez l'aliment en entrant son numéro parmis les choix suivants : ")
@@ -52,17 +53,14 @@ class Client:
                     return list_product[product_choice-1]
 
     def substitutes_loop(self, product_choice):
-        """ Menu displaying the three best substitutes """
-        # product_choice = Product.objects.get(name=product_choice.name)
-        print (f"product_choice as product : {product_choice}") # Test
+        """ Menu displaying the ten best substitutes """
         while True:
             best_substitutes = Product.objects.fine_substitutes(product_choice)
-            print (f"best_substitutes : {best_substitutes}") # Test
             list_substitutes = []
             print("\n")
             for i, substitute in enumerate(best_substitutes):
                 if i < 10:
-                    print(f"  {i+1} - {substitute.name} - indice nutritionnel : {substitute.nutrition_grade.upper()}")
+                    print(f"  {i+1} - {substitute.name} - Valeur nutritionnelle : {substitute.nutrition_grade.upper()}")
                     list_substitutes.append(substitute)
                 else:
                     break
@@ -75,17 +73,16 @@ class Client:
 
     def substitut_display(self, substitute_choice, product_choice):
         """ Menu displaying the details of the chosen substitute """
-        print (f"substitute_choice : {substitute_choice}, product_choice : {product_choice}") # Test
         while True:
             print(
-                "\n  Voici les détails du substitut que vous avez sélectionné :\n"
+                "\n"
+                "  Voici les détails du substitut que vous avez sélectionné :\n"
                 f"  Nom du produit : {substitute_choice.name}\n"
-                "  Au moins un magasin ou l'acheter :\n"
+                "  Au moins un magasin ou l'acheter :"
             )
             stores = Store.objects.get_some_by_product(substitute_choice, 3)
-            print (f"stores : {stores}")
             for store in stores:
-                print(f"   {store.name}\n")
+                print(f"    {store.name}")
             print(
                 f"  Score nutritionnel : {substitute_choice.nutrition_grade.upper()}\n"
                 f"  Adresse web du produit : {substitute_choice.url}\n"
@@ -102,29 +99,26 @@ class Client:
         favorites = Favorite.objects.get_all_favorite()
         for i, favorite in enumerate(favorites):
             print(
-                "\n  Le produit original     ==>  {favorites.original}\n"
-                "    Le produit substitué ==>  {favorites.substitute}\n"
-                "    url                     : {favorites.url}\n"
-                "    nutrition_grade         : {favorites.nutrition_grade}\n"
-                "    Magasins                : {favorites.stores}\n"
+                "\n"
+                f"Le produit original     ==>  {favorite.product_as_original}\n"
+                f"   Le produit substitué ==>  {favorite.product_as_substitut}\n"
+                f"   url                     : {favorite.url}\n"
+                f"   nutrition_grade         : {favorite.nutrition_grade.upper()}\n"
+                f"   Magasins                : {favorite.stores}\n"
                 )
-            if i % 4 == 0 and i != 0:
-                print("\n  Souhaitez vous afficher les substitutes suivants (O/N) ?")
+            if i % 3 == 0 and i != 0:
+                print("\n  Veuillez entrer 'O' pour afficher les substitutes suivants ou une autre touche pour revenir au menu principal : ")
                 again_choice = input("\n").upper()
                 if again_choice == "O":
                     continue
-                elif again_choice == "N":
-                    self.start()
+                else:
+                    break
+        print("\n  Fin de la liste.")
         self.start()
 
 
     def start(self):
         """  Main frame  """
-        print(
-            "\n  Bienvenue dans cette application qui va vous permettre de "
-            "  manger mieux grace à Open Food Facts !\n"
-            "  Que souhaitez vous faire ?\n"
-            )
         main_choice = self.main_loop()
         if main_choice == "1":
             category_choice = self.category_loop()
@@ -135,9 +129,3 @@ class Client:
             self.favorite_display()
         if main_choice == "3":
             print("  Au revoir !")
-
-
-        
-
-
-            
