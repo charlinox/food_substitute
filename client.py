@@ -12,7 +12,8 @@ class Client:
         """ Main menu """
         while True:
             print(
-                "  1 - Substituer un aliment\n"
+                "\n"
+                "  1 - Quel aliment souhaitez-vous remplacer ?\n"
                 "  2 - Retrouver mes aliments substitués\n"
                 "  3 - Sortir du programme\n"
             )
@@ -52,7 +53,7 @@ class Client:
                     return list_product[product_choice-1]
 
     def substitutes_loop(self, product_choice):
-        """ Menu displaying the three best substitutes """
+        """ Menu displaying the ten best substitutes """
         while True:
             best_substitutes = Product.objects.fine_substitutes(product_choice)
             list_substitutes = []
@@ -105,24 +106,19 @@ class Client:
                 f"   nutrition_grade         : {favorite.nutrition_grade.upper()}\n"
                 f"   Magasins                : {favorite.stores}\n"
                 )
-            if i % 4 == 0 and i != 0:
+            if i % 3 == 0 and i != 0:
                 print("\n  Veuillez entrer 'O' pour afficher les substitutes suivants ou une autre touche pour revenir au menu principal : ")
                 again_choice = input("\n").upper()
                 if again_choice == "O":
                     continue
-            if i % 4 != 0 or i == 0:
-                    print("\n  Fin de la liste.")
-                    self.start()
+                else:
+                    break
+        print("\n  Fin de la liste.")
         self.start()
 
 
     def start(self):
         """  Main frame  """
-        print(
-            "\n  Bienvenue dans cette application qui va vous permettre de "
-            "manger mieux grace à Open Food Facts !\n"
-            "  Que souhaitez vous faire ?\n"
-            )
         main_choice = self.main_loop()
         if main_choice == "1":
             category_choice = self.category_loop()
@@ -133,6 +129,7 @@ class Client:
             self.favorite_display()
         if main_choice == "3":
             print("  Au revoir !")
+            break
 
         
 

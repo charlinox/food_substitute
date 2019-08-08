@@ -292,6 +292,7 @@ class FavoriteRepository(Repository):
         self.db.query(f"""
             INSERT INTO {self.table} (substitut_id, original_id)
             VALUES (:substitut_id, :original_id)
+            ON DUPLICATE KEY UPDATE substitut_id = :substitut_id
         """, substitut_id=substitute_choice.id, original_id=product_choice.id)
         favorite = (substitute_choice.id, product_choice.id)
         return favorite
