@@ -2,6 +2,7 @@
 Projet 5 OpenClassrooms
 
 This repository contains the source code that I use for my N°5 project presentation.
+
 You want to change your diet but do not know where to start. Replace Nutella with hazelnut paste, yes, but which one? And in which store to buy it? This solution is a program that interacts with the Open Food Facts database to retrieve food, compare it to offer you a healthier substitute for the one you want.
 
 Features:
