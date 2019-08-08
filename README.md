@@ -8,8 +8,8 @@ Features:
 
 The user is on the terminal that shows him the following choices:
 
-1 - Quel aliment souhaitez-vous remplacer ? 
-2 - Retrouver mes aliments substitués.
+1 - Quel aliment souhaitez-vous remplacer ?
+2 - Retrouver mes aliments substitués
 3 - Sortir du programme
 
 The user selects 1. The program asks the user the following questions and the user selects the answers:
