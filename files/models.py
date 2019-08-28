@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-from . import repositories, constants
+from . import repositories
 
 
 class Model:
@@ -17,6 +17,7 @@ class Model:
             for key, value in vars(self).items()
         )
         return f"{type(self).__name__}({attributes})"
+
 
 class Store(Model):
 
@@ -43,7 +44,6 @@ class Product(Model):
         self.nutrition_grade = nutrition_grade
         self.url = url
 
-
     @property
     def all_stores(self):
         """Loads related stores."""
@@ -55,11 +55,14 @@ class Product(Model):
         return Category.objects.get_all_by_product(self)
 
     @classmethod
-    def create_from_openfoodfacts(cls, code, product_name, nutrition_grades, url, stores, categories, **kwargs):
+    def create_from_openfoodfacts(cls, code, product_name, nutrition_grades,
+                                  url, stores, categories, **kwargs):
         """Creates products from openfoodfacts data."""
-        if not (product_name.strip() or nutrition_grades.strip() or stores.strip()):
-            raise TypeError("product_name, nutrition_grades and stores must be non-blank fields")
-        if len("%s" % code) > 19: # bigint = 19 digits
+        if not (product_name.strip() or nutrition_grades.strip() or
+                stores.strip()):
+            raise TypeError("product_name, nutrition_grades and stores must"
+                            " be non-blank fields")
+        if len("%s" % code) > 19:
             raise TypeError("product.id is too big")
 
         product = cls.objects.get_or_create(
@@ -87,18 +90,20 @@ class Product(Model):
         return Product.objects.get_all_by_category(self)
 
 
-Product.objects = repositories.ProductRepository(Product)   
+Product.objects = repositories.ProductRepository(Product)
 
 
 class Favorite(Model):
 
-    def __init__(self, product_as_original, product_as_substitut, url, nutrition_grade, stores, **kwargs):
+    def __init__(self, product_as_original, product_as_substitut,
+                 url, nutrition_grade, stores, **kwargs):
         """Initializes the model."""
         self.product_as_original = product_as_original
         self.product_as_substitut = product_as_substitut
         self.url = url
         self.nutrition_grade = nutrition_grade
         self.stores = stores
+
 
 Favorite.objects = repositories.FavoriteRepository(Favorite)
 
@@ -108,11 +113,12 @@ class Category(Model):
     def __init__(self, name, id=None, **kwargs):
         """Initializes the model."""
         self.name = name
-        self.id=id
+        self.id = id
 
     @property
     def all_products(self):
         """Loads related products."""
-        return Category.objects.get_all_by_category(self)
+        return Product.objects.get_all_by_category(self)
+
 
 Category.objects = repositories.CategoryRepository(Category)

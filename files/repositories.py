@@ -26,8 +26,8 @@ class Repository:
         """Searches objects in the database matching the provided criteria."""
         conditions = " AND ".join(
             [f"{term} = :{term}"
-            for term, value in search_terms.items()
-            if value is not None]
+             for term, value in search_terms.items()
+             if value is not None]
         ).strip()
 
         if conditions:
@@ -87,7 +87,7 @@ class StoreRepository(Repository):
     table = 'store'
 
     def create_table(self):
-        """Creates the store table on local bdd.""" 
+        """Creates the store table on local bdd."""
         self.db.query(f"""
             CREATE TABLE IF NOT EXISTS {self.table} (
                 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -97,7 +97,7 @@ class StoreRepository(Repository):
         """)
 
     def save(self, store):
-        """Saves the store on local bdd.""" 
+        """Saves the store on local bdd."""
         self.db.query(f"""
             INSERT INTO {self.table} (id, name)
             VALUES (:id, :name)
@@ -192,19 +192,21 @@ class ProductRepository(Repository):
     def get_all_by_category(self, category):
         """Gets all the products for a given category."""
         products = self.db.query(f"""
-            SELECT product.id, product.name, product.nutrition_grade from product
+            SELECT product.id, product.name, product.nutrition_grade,
+            product.url from product
             JOIN product_category ON product_category.product_id = product.id
             JOIN category ON product_category.category_id = category.id
             WHERE category.id = :id
         """, id=category.id).all(as_dict=True)
         return [self.model(**product) for product in products]
-    
+
     def fine_substitutes(self, product_choice):
         """Finds better substitutes to the one provided."""
         substitutes = self.db.query("""
-        SELECT  product.id, product.name, product.nutrition_grade, product.url, count(*) FROM product 
+        SELECT  product.id, product.name, product.nutrition_grade,
+        product.url, count(*) FROM product
         JOIN product_category ON product.id = product_category.product_id
-        WHERE 
+        WHERE
             product.id != :product_choice_id
 
             AND product_category.category_id IN (
@@ -222,18 +224,10 @@ class ProductRepository(Repository):
 
         -- On ordonne par nombre décroissant de tags communs
         ORDER BY count(*) DESC, MAX(:product_choice_nutrition_grade) ASC
-        """, product_choice_id=product_choice.id, product_choice_nutrition_grade=product_choice.nutrition_grade)
+        """, product_choice_id=product_choice.id,
+             product_choice_nutrition_grade=product_choice.nutrition_grade)
         return [self.model(**substitute) for substitute in substitutes]
 
-    def get_all_by_category(self, category):
-        """Gets all the products for a given category."""
-        products = self.db.query(f"""
-            SELECT product.id, product.name, product.nutrition_grade, product.url from product
-            JOIN product_category ON product_category.product_id = product.id
-            JOIN category ON product_category.category_id = category.id
-            WHERE category.id = :id
-        """, id=category.id).all(as_dict=True)
-        return [self.model(**product) for product in products]
 
 class CategoryRepository(Repository):
 
@@ -275,7 +269,8 @@ class CategoryRepository(Repository):
     def get_all_by_category(self, category):
         """Gets all the products for a given category."""
         products = self.db.query(f"""
-            SELECT product.id, product.name, product.nutrition_grade from product
+            SELECT product.id, product.name, product.nutrition_grade
+            from product
             JOIN product_category ON product_category.product_id = product.id
             JOIN category ON product_category.category_id = category.id
             WHERE category.id = :id
@@ -310,13 +305,16 @@ class FavoriteRepository(Repository):
     def get_all_favorite(self):
         """Get all the favorites."""
         products = self.db.query(f"""
-            SELECT original.`name` as "product_as_original", substitute.`name` as "product_as_substitut", substitute.`url` as "url", \
-            substitute.`nutrition_grade`, GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ') \
+            SELECT original.`name` as "product_as_original", substitute.`name`
+            as "product_as_substitut", substitute.`url` as "url",
+            substitute.`nutrition_grade`,
+            GROUP_CONCAT(DISTINCT store.`name` SEPARATOR ', ')
             as stores FROM favorite as fav
             JOIN product as original ON original.id = fav.original_id
             JOIN product as substitute ON substitute.id = fav.substitut_id
             JOIN product_store ON product_store.product_id = substitute.id
             JOIN store ON store.id = product_store.store_id
-            GROUP BY original.name, substitute.name, substitute.url, substitute.nutrition_grade
+            GROUP BY original.name, substitute.name, substitute.url,
+            substitute.nutrition_grade
         """).all(as_dict=True)
         return [self.model(**product) for product in products]

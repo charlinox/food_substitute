@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\charl\\.virtualenvs\\Food_substitute-wgxEysDg\\Scripts\\python.exe",
+    "python.pythonPath": "C:\\Users\\charl\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true
